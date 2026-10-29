@@ -1,0 +1,52 @@
+# ShopEase – Service-to-Service Communication Workflow
+
+## 1. Objective
+
+This document explains how ShopEase services communicate during customer registration, product browsing, order creation, payment processing, and order tracking.
+
+## 2. Normal Order Workflow
+
+1. The customer registers or logs in through the Authentication Service.
+2. The Authentication Service returns a JWT access token after successful authentication.
+3. The customer browses products through the Product Service.
+4. The customer submits an order request through the API Gateway.
+5. The Order Service validates the request and authenticated identity.
+6. The Order Service requests product and stock validation from the Product Service.
+7. The Product Service validates availability and performs stock reservation according to the agreed API contract.
+8. The Order Service creates or updates the order state.
+9. The Order Service requests payment processing from the Payment Service.
+10. The Payment Service records the transaction result and returns its payment status.
+11. The Order Service records the resulting order status.
+12. The customer retrieves order history through the Order Service.
+
+## 3. Service-to-Service Communication
+
+Services communicate through REST APIs using HTTP requests and JSON responses. Each service accesses its own database and does not directly query another service's database.
+
+## 4. Error Handling
+
+**Timeout:** Stop waiting after the configured timeout and handle the request as an uncertain or failed dependency call.
+
+**Bounded retries:** Retry only suitable transient failures, with a limited number of attempts and appropriate backoff.
+
+**Circuit breaker:** Temporarily stop requests to a repeatedly failing dependency and test recovery before restoring normal traffic.
+
+**Idempotency:** Use stable idempotency keys and database uniqueness constraints to prevent duplicate orders or payment operations.
+
+**Logging:** Record request correlation IDs, error details, and state transitions without logging passwords, access tokens, or sensitive payment data.
+
+## 5. Payment Failure
+
+If payment fails, the Order Service must not mark the order as paid. It should record the appropriate state and follow the defined retry, cancellation, or inventory-release policy.
+
+If the payment outcome is unknown because of a timeout, the system must reconcile the payment before attempting another charge.
+
+## 6. Inventory and Consistency
+
+Stock validation alone does not prevent overselling. Product Service should provide an atomic reservation or stock-decrement operation. The system must define what happens if payment fails after inventory is reserved.
+
+Because the services have independent databases, the entire workflow cannot generally be protected by one ordinary database transaction. A coordinated workflow or saga-style process may be required.
+
+## 7. Conclusion
+
+Reliable service-to-service communication requires clear API contracts, timeouts, bounded retries, idempotency, monitoring, and explicit handling of partial failures. These mechanisms help ShopEase avoid duplicate operations and maintain consistent business states.

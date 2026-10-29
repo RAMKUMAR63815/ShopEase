@@ -1,0 +1,55 @@
+# ShopEase – Daily Progress Report
+
+**Project:** ShopEase – Microservices-Based E-Commerce Management System
+**Day:** Day 1 – Learning, Research & Architecture Design
+**Date:** 29 October 2026
+
+## 1. Tasks Completed
+
+- Studied the project requirements and proposed technology stack.
+- Compared monolithic and microservices architectures.
+- Identified the responsibilities of the Authentication, User, Product, Order, and Payment services.
+- Planned independent database ownership for each microservice.
+- Studied REST API design, HTTP methods, and HTTP status codes.
+- Designed the service-to-service communication workflow.
+- Prepared the overall ShopEase architecture design.
+
+## 2. Topics Learned
+
+- Monolithic vs. microservices architecture.
+- REST API principles and HTTP methods.
+- FastAPI, MySQL, SQLAlchemy ORM, and Pydantic roles.
+- JWT-based authentication and authorization.
+- Independent database ownership.
+- Service-to-service communication and failure handling.
+- Docker, Docker Compose, and Git workflow concepts.
+
+## 3. Documents and Diagrams Prepared
+
+1. `01_architecture_comparison.docx`
+2. `02_service_responsibilities.docx`
+3. `03_database_ownership.docx`
+4. `04_rest_api_notes.docx`
+5. `05_communication_workflow.docx`
+6. `06_shopease_architecture.mmd`
+
+## 4. Issues Faced and Solutions Identified
+
+- **Issue:** Understanding how independent microservices communicate.
+  **Solution:** Defined REST API communication between services and identified the Order Service's interactions with the Product and Payment Services.
+- **Issue:** Avoiding direct database dependencies between services.
+  **Solution:** Assigned each service its own database and established API-based communication between services.
+- **Issue:** Handling service failures and repeated payment requests.
+  **Solution:** Identified timeouts, controlled retries, idempotency, and payment-result reconciliation as important safeguards.
+
+## 5. Pending Work
+
+- Configure Docker Compose and the FastAPI service foundation.
+- Configure MySQL databases and SQLAlchemy connections.
+- Begin implementing and testing the first APIs.
+
+## 6. Next-Day Plan
+
+On Day 2, begin implementation by setting up the project repository, Docker environment, FastAPI service structure, database configuration, and initial API endpoints.
+
+**Status:** Day 1 documentation and architecture work prepared; final completion is subject to saving and verifying all deliverables.

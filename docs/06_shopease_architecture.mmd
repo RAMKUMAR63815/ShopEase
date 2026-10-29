@@ -1,0 +1,20 @@
+
+flowchart TD
+    C["Customer / Frontend"] -->|"REST API / HTTPS"| G["API Gateway"]
+
+    G -->|"Authentication routes"| A["Authentication Service"]
+    G -->|"Profile routes"| U["User Service"]
+    G -->|"Catalog routes"| P["Product Service"]
+    G -->|"Order routes"| O["Order Service"]
+    G -->|"Payment routes"| PAY["Payment Service"]
+
+    A --> ADB[("Auth Database")]
+    U --> UDB[("User Database")]
+    P --> PDB[("Product Database")]
+    O --> ODB[("Order Database")]
+    PAY --> PAYDB[("Payment Database")]
+
+    O -->|"Check product / reserve stock"| P
+    O -->|"Request payment / check result"| PAY
+
+    G -.->|"JWT validation / authorization"| SEC["Security checks"]

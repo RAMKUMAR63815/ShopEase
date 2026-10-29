@@ -1,0 +1,109 @@
+# ShopEase – Microservices Responsibilities
+
+## 1. Introduction
+
+ShopEase uses a microservices architecture consisting of five business services and an API Gateway. Each business service handles a defined business responsibility and exposes REST APIs.
+
+## 2. Authentication Service
+
+**Purpose:** Manage customer registration, login, and authentication.
+
+**Responsibilities:**
+- Register new users.
+- Hash passwords securely.
+- Verify login credentials.
+- Generate and validate JWT access tokens.
+- Provide authenticated identity information to authorized services.
+
+**Example APIs:**
+- POST /auth/register
+- POST /auth/login
+- GET /auth/me
+
+## 3. User Service
+
+**Purpose:** Manage customer profile and address information.
+
+**Responsibilities:**
+- Create and update customer profiles.
+- Manage delivery addresses.
+- Retrieve the authenticated customer's information.
+- Ensure users can only modify their permitted records.
+
+**Example APIs:**
+- GET /users/me
+- PATCH /users/me
+- POST /users/me/addresses
+- GET /users/me/addresses
+
+## 4. Product Service
+
+**Purpose:** Manage product catalog and inventory.
+
+**Responsibilities:**
+- Create, retrieve, update, and delete products.
+- Manage product categories.
+- Maintain product prices and stock quantities.
+- Validate stock availability.
+- Prevent invalid stock updates.
+
+**Example APIs:**
+- GET /products
+- GET /products/{product_id}
+- POST /products
+- PATCH /products/{product_id}
+- DELETE /products/{product_id}
+
+## 5. Order Service
+
+**Purpose:** Manage customer orders and their lifecycle.
+
+**Responsibilities:**
+- Create orders and order items.
+- Validate product availability through the Product Service.
+- Request payment processing through the Payment Service.
+- Track order history and status.
+- Handle failed payment attempts and order cancellation appropriately.
+
+**Example APIs:**
+- POST /orders
+- GET /orders
+- GET /orders/{order_id}
+- PATCH /orders/{order_id}/status
+
+## 6. Payment Service
+
+**Purpose:** Manage payment attempts and transaction records.
+
+**Responsibilities:**
+- Receive authorized payment requests.
+- Integrate with a payment provider or simulate payment outcomes for training.
+- Record transaction references and payment status.
+- Track successful, failed, and pending payments.
+- Prevent duplicate processing using idempotency controls.
+
+**Example APIs:**
+- POST /payments
+- GET /payments/{payment_id}
+- GET /payments/orders/{order_id}
+
+## 7. API Gateway
+
+**Purpose:** Provide a single entry point for clients and route requests to the correct service.
+
+**Responsibilities:**
+- Route requests to backend services.
+- Apply appropriate authentication and request policies.
+- Handle upstream timeouts and service errors.
+- Forward responses to clients.
+- Support centralized logging and monitoring.
+
+The Gateway should not replace business authorization checks within the services.
+
+## 8. Service Communication
+
+The Order Service calls the Product Service to validate availability and the Payment Service to request payment processing. Each service accesses its own database and exposes the information other services need through APIs.
+
+## 9. Conclusion
+
+Separating ShopEase into distinct services improves business responsibility boundaries and enables independent development and deployment. Proper API contracts, authentication, database ownership, and error handling are essential for reliable communication between the services.

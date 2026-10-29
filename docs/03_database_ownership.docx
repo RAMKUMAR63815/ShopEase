@@ -1,0 +1,47 @@
+# ShopEase – Database Ownership and Isolation
+
+## 1. Introduction
+
+ShopEase follows the database-per-service principle. Each business microservice owns its database and manages its data independently. Other services access the required information through APIs instead of querying the owner's database directly.
+
+## 2. Database Allocation
+
+| Service | Proposed database | Example tables |
+|---|---|---|
+| Authentication Service | shopease_auth_db | auth_users, refresh_tokens |
+| User Service | shopease_user_db | user_profiles, addresses |
+| Product Service | shopease_product_db | products, categories, inventory |
+| Order Service | shopease_order_db | orders, order_items |
+| Payment Service | shopease_payment_db | payments, payment_transactions |
+
+These database names and table names are proposed for the ShopEase design and may be adjusted during implementation.
+
+## 3. Database Isolation
+
+Each service uses its own database configuration and should have permissions limited to its own data. Even if multiple databases run on one MySQL server, their ownership and access boundaries should remain separate.
+
+## 4. Service-to-Service Data Access
+
+A service must not directly query another service's database.
+
+For example, when a customer places an order, Order Service calls Product Service to validate the requested product and available stock. Product Service reads and validates its own data before returning the result.
+
+Similarly, Order Service requests payment processing through Payment Service APIs. It does not write directly to the Payment Service's database.
+
+## 5. Advantages
+
+- Independent database schema changes.
+- Clear responsibility for data and business rules.
+- Reduced coupling between services.
+- Better control over database permissions.
+- Independent development and deployment.
+
+## 6. Important Considerations
+
+Network failures can occur during API calls. Services should implement suitable timeouts, error handling, and retry policies. Order creation and payment processing must also handle duplicate requests and partial failures safely.
+
+The Order Service may store snapshots of purchased product details to preserve historical order information.
+
+## 7. Conclusion
+
+Database ownership is an essential principle of ShopEase microservices architecture. Every business service manages its own data and provides APIs for other services that need it.
