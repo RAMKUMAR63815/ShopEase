@@ -1,0 +1,58 @@
+services:
+ # Defines all services that Docker Compose manages.
+  mysql: # Defines the MySQL database service.
+    image: mysql:8.0 # Uses the official MySQL 8.0 Docker image.
+    container_name: shopease_mysql # Assigns a custom name to the MySQL container.
+    restart: unless-stopped # Automatically restarts the container unless manually stopped.
+
+    environment: # Defines environment variables for the MySQL container.
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+     # Sets the MySQL root password from the .env file.
+
+    ports: # Configures port mapping between the host and container.
+      - "${MYSQL_HOST_PORT}:3306" # Maps the host port to MySQL's default container port 3306.
+
+    volumes: # Configures persistent storage and initialization scripts.
+      - shopease_mysql_data:/var/lib/mysql # Persists MySQL database data even if the container is removed.
+      - ./infrastructure/mysql/init:/docker-entrypoint-initdb.d:ro # Mounts initialization scripts as read-only files.
+        #setup mysql service db automaticly at first time
+    healthcheck: # Checks whether the MySQL server is ready to accept connections.
+      test: # Defines the command used to check MySQL health.
+        [
+          "CMD",
+          "mysqladmin", # Runs the MySQL administration utility.
+          "ping", # Checks whether the MySQL server is responding.
+          "-h",
+          "localhost", # Connects to the MySQL server on the local container.
+          "-uroot", # Uses the MySQL root account.
+          "-p${MYSQL_ROOT_PASSWORD}" # Authenticates using the root password from the .env file.
+        ]
+      interval: 10s # Runs the health check every 10 seconds.
+      timeout: 5s # Allows each health check a maximum of 5 seconds.
+      retries: 10 # Marks the container as unhealthy after 10 consecutive failed checks.
+  
+  auth_service:
+    build:
+      context: ./services/auth_service #Specifies the folder Docker can access for building.
+      dockerfile: Dockerfile
+    container_name: shopease_auth_service
+    restart: unless-stopped
+    
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      AUTH_DB_USER: ${AUTH_DB_USER}
+      AUTH_DB_PASSWORD: ${AUTH_DB_PASSWORD}
+      AUTH_DB_NAME: ${AUTH_DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${JWT_ACCESS_TOKEN_EXPIRE_MINUTES}
+
+    ports:
+      - "8005:8000"
+    depends_on:
+      mysql:
+
+        condition: service_healthy
+volumes: # Defines named Docker volumes.
+  shopease_mysql_data: # Creates a named volume for persistent MySQL database storage.
