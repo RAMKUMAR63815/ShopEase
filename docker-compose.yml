@@ -54,5 +54,128 @@ services:
       mysql:
 
         condition: service_healthy
+  
+  user_service:
+    build:
+      context: ./services/user_service
+      dockerfile: Dockerfile
+    container_name: shopease_user_service
+    restart: unless-stopped
+    ports:
+      - "8006:8000"
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      USER_DB_USER: ${USER_DB_USER}
+      USER_DB_PASSWORD: ${USER_DB_PASSWORD}
+      USER_DB_NAME: ${USER_DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+  
+  product_service:
+    build:
+      context: ./services/product_service
+      dockerfile: Dockerfile
+    container_name: shopease_product_service
+    restart: unless-stopped
+    ports:
+      - "8007:8000"
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      PRODUCT_DB_USER: ${PRODUCT_DB_USER}
+      PRODUCT_DB_PASSWORD: ${PRODUCT_DB_PASSWORD}
+      PRODUCT_DB_NAME: ${PRODUCT_DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      
+  order_service:
+    build:
+      context: ./services/order_service
+      dockerfile: Dockerfile
+    container_name: shopease_order_service
+    restart: unless-stopped
+    ports:
+      - "8004:8000"
+
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      ORDER_DB_USER: ${ORDER_DB_USER}
+      ORDER_DB_PASSWORD: ${ORDER_DB_PASSWORD}
+      ORDER_DB_NAME: ${ORDER_DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      PRODUCT_SERVICE_URL: http://product_service:8000
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      product_service:
+        condition: service_started #verify that service strated
+
+  payment_service:
+    build:
+      context: ./services/payment_service
+      dockerfile: Dockerfile
+
+    container_name: shopease_payment_service
+    restart: unless-stopped
+    ports:
+      - "8008:8000"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      PAYMENT_DB_USER: ${PAYMENT_DB_USER}
+      PAYMENT_DB_PASSWORD: ${PAYMENT_DB_PASSWORD}
+      PAYMENT_DB_NAME: ${PAYMENT_DB_NAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: ${JWT_ALGORITHM}
+      ORDER_SERVICE_URL: http://order_service:8000
+      INTERNAL_SERVICE_SECRET: ${INTERNAL_SERVICE_SECRET}
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+      order_service:
+        condition: service_started
+
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+
+    container_name: shopease_gateway
+
+    restart: unless-stopped
+
+    ports:
+      - "8009:8000"
+
+    environment:
+      AUTH_SERVICE_URL: http://auth_service:8000
+      USER_SERVICE_URL: http://user_service:8000
+      PRODUCT_SERVICE_URL: http://product_service:8000
+      ORDER_SERVICE_URL: http://order_service:8000
+      PAYMENT_SERVICE_URL: http://payment_service:8000
+
+    depends_on:
+      - auth_service
+      - user_service
+      - product_service
+      - order_service
+      - payment_service
 volumes: # Defines named Docker volumes.
   shopease_mysql_data: # Creates a named volume for persistent MySQL database storage.

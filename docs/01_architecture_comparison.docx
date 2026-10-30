@@ -1,0 +1,61 @@
+# ShopEase – Monolithic vs. Microservices Architecture
+
+## 1. Introduction
+
+ShopEase is an e-commerce management system designed to manage customer authentication, user profiles, product catalogs, orders, and payments. The project uses a microservices architecture to separate business responsibilities into independent services.
+
+## 2. Monolithic Architecture
+
+A monolithic architecture is a software design in which multiple business modules are developed and deployed as one application.
+
+**Advantages**
+- Easy to start developing and testing.
+- Simple deployment for small applications.
+- Communication between modules is straightforward.
+
+**Disadvantages**
+- The application can become difficult to maintain as it grows.
+- A failure in one module can affect the overall application.
+- Scaling one business function independently is difficult.
+- Deploying a change may require redeploying the entire application.
+
+## 3. Microservices Architecture
+
+Microservices architecture divides an application into independent services. Each service handles a specific business responsibility and communicates with other services through APIs.
+
+**Advantages**
+- Services can be developed and deployed independently.
+- Each service can be scaled according to its workload.
+- Teams can work on different services independently.
+- Failures can be isolated with proper error handling and resilience mechanisms.
+- Each service can manage its own database and data model.
+
+**Disadvantages**
+- Service-to-service communication introduces network failures and latency.
+- Monitoring, testing, deployment, and debugging become more complex.
+- Data consistency across services requires careful design.
+- Authentication, API security, and configuration require additional attention.
+
+## 4. Comparison
+
+| Feature | Monolithic | Microservices |
+|---|---|---|
+| Application structure | One application | Multiple independent services |
+| Deployment | Usually one deployment unit | Services can be deployed separately |
+| Scalability | Often scales the application as a whole | Services can scale independently |
+| Database | May use a shared database | Each service owns its data |
+| Communication | Mostly internal function calls | APIs or messaging between services |
+| Complexity | Lower initially | Higher operational complexity |
+| Best suited for | Small or simpler applications | Applications requiring independent scaling and deployment |
+
+## 5. Why ShopEase Uses Microservices
+
+ShopEase separates authentication, user management, products, orders, and payments into distinct services. This separation helps developers maintain each business function independently and scale heavily used services without necessarily scaling the entire application.
+
+For example, the Product Service can handle increased product browsing traffic independently of the Payment Service. The Order Service can communicate with Product and Payment APIs without directly accessing their databases.
+
+Microservices are suitable for ShopEase as a learning project because they demonstrate service boundaries, REST API communication, database ownership, authentication, containerization, and error handling.
+
+## 6. Conclusion
+
+Both architectures have advantages. A monolithic architecture is often simpler for small applications, whereas microservices can provide greater independence and flexibility for larger systems. ShopEase uses microservices to demonstrate how an enterprise-style e-commerce backend can be divided into independently managed business services.

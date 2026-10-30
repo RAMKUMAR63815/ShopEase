@@ -1,0 +1,102 @@
+# ShopEase – REST API and HTTP Methods Documentation
+
+## 1. Introduction
+
+REST APIs allow the ShopEase client and microservices to communicate through HTTP requests and responses. JSON is used as the data exchange format for most API request and response bodies.
+
+## 2. HTTP Methods
+
+**GET:** Retrieves a resource or collection without changing its state.
+
+Example: GET /api/products
+
+**POST:** Creates a resource or initiates an operation.
+
+Example: POST /api/orders
+
+**PUT:** Replaces a resource representation.
+
+Example: PUT /api/users/me/address/1
+
+**PATCH:** Updates selected fields of a resource.
+
+Example: PATCH /api/orders/101/status
+
+**DELETE:** Requests removal of a resource.
+
+Example: DELETE /api/products/101
+
+## 3. JSON Request Example
+
+Endpoint: POST /api/orders
+
+Request body:
+
+{
+  "items": [
+    {
+      "product_id": 101,
+      "quantity": 2
+    }
+  ],
+  "shipping_address_id": 5
+}
+
+The Order Service validates the request and retrieves trusted product pricing and stock information from the Product Service.
+
+## 4. JSON Response Example
+
+HTTP status: 201 Created
+
+{
+  "order_id": 501,
+  "status": "PENDING_PAYMENT",
+  "total_amount": "1999.98",
+  "currency": "INR"
+}
+
+This is an illustrative response. The actual response schema will be defined during implementation.
+
+## 5. HTTP Status Codes
+
+- 200 OK: Request completed successfully.
+- 201 Created: Resource created successfully.
+- 204 No Content: Successful operation without a response body.
+- 400 Bad Request: Request is invalid.
+- 401 Unauthorized: Authentication is missing or invalid.
+- 403 Forbidden: The user does not have the required permission.
+- 404 Not Found: Requested resource does not exist.
+- 409 Conflict: Request conflicts with the current resource state.
+- 422 Unprocessable Entity: Request validation failed.
+- 500 Internal Server Error: Unexpected server error.
+- 502 Bad Gateway: Gateway received an invalid response from an upstream service.
+- 503 Service Unavailable: Service is temporarily unable to handle the request.
+
+## 6. Request and Response Structure
+
+An HTTP request may contain a method, URL, headers, and request body.
+
+For protected endpoints, the client commonly sends an Authorization header containing a JWT access token.
+
+Example:
+
+Authorization: Bearer <access_token>
+
+The server validates the token and permissions before allowing the requested operation.
+
+An HTTP response contains a status code, response headers, and optionally a JSON response body.
+
+## 7. API Design Principles
+
+- Use resource-oriented URLs.
+- Use HTTP methods consistently.
+- Validate input using Pydantic schemas.
+- Return appropriate HTTP status codes.
+- Protect sensitive endpoints with authentication and authorization.
+- Do not trust customer-supplied prices or payment status.
+- Handle errors consistently.
+- Use idempotency controls where duplicate operations could cause harm.
+
+## 8. Conclusion
+
+Understanding REST APIs, HTTP methods, JSON, and status codes is essential for implementing ShopEase microservices. These concepts provide a consistent interface for client requests and communication between backend services.

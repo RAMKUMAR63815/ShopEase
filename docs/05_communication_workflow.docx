@@ -49,4 +49,4 @@ Because the services have independent databases, the entire workflow cannot gene
 
 ## 7. Conclusion
 
-Reliable service-to-service communication requires clear API contracts, timeouts, bounded retries, idempotency, monitoring, and explicit handling of partial failures. These mechanisms help ShopEase avoid duplicate operations and maintain consistent business states.
+Reliable service-to-service communication requires clear API contracts, timeouts, bounded retries, idempotency, monitoring, and explicit handling of partial failures. These mechanisms help ShopEase avoid duplicate operations and maintain consistent business states.docker compose config
